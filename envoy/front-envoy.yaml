@@ -19,14 +19,17 @@ static_resources:
               - "*"
               routes:
               - match:
-                  prefix: "/service1"
-                route:
-                  cluster: service1
-                  prefix_rewrite: "/"
-              - match:
-                  prefix: "/service2"
+                  prefix: "/"
+                  headers:
+                  - name: x-route-to
+                    exact_match: service2
                 route:
                   cluster: service2
+                  prefix_rewrite: "/"
+              - match:
+                  prefix: "/"
+                route:
+                  cluster: service1
                   prefix_rewrite: "/"
           http_filters:
           - name: envoy.filters.http.router
