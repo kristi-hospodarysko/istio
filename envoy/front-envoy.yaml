@@ -46,6 +46,14 @@ static_resources:
               socket_address:
                 address: service1
                 port_value: 80
+    health_checks:
+    - timeout: 1s
+      interval: 60s
+      unhealthy_threshold: 3
+      healthy_threshold: 1
+      http_health_check:
+        path: /health
+
   - name: service2
     connect_timeout: 1s
     type: strict_dns
@@ -60,6 +68,14 @@ static_resources:
               socket_address:
                 address: service2
                 port_value: 80
+    health_checks:
+    - timeout: 1s
+      interval: 60s
+      unhealthy_threshold: 3
+      healthy_threshold: 1
+      http_health_check:
+        path: /health,
+
 admin:
   access_log_path: "/dev/null"
   address:
