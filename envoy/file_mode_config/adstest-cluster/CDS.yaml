@@ -1,0 +1,24 @@
+- name: some_service
+  connect_timeout: 0.25s
+  type: STRICT_DNS
+  lb_policy: ROUND_ROBIN
+  hosts:
+  - socket_address:
+      address: service1
+      port_value: 80
+- name: some_service2
+  connect_timeout: 0.25s
+  type: STRICT_DNS
+  lb_policy: ROUND_ROBIN
+  hosts:
+  - socket_address:
+      address: service2
+      port_value: 80
+- name: some_servicessss
+  connect_timeout: 0.25s
+  type: STRICT_DNS
+  lb_policy: ROUND_ROBIN
+  hosts:
+  - socket_address:
+      address: servicessssss
+      port_value: 80

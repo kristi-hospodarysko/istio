@@ -1,0 +1,58 @@
+version: "3.7"
+services:
+
+  xds-server:
+    image: tak2siva/envoy-pilot:latest
+    restart: on-failure
+    networks:
+      - xds-example
+    ports:
+      - "9090:9090"
+    expose:
+      - 7777
+    volumes:
+      - $PWD/env_values.txt:/.env
+      - $PWD/file_mode_config:/file_mode_config
+    command: "sh -c './Envoy-Pilot'"
+
+  ## Envoy
+  envoy:
+    image: envoyproxy/envoy:v1.13.1
+    volumes:
+      - $PWD/envoy-config.yaml:/envoy-config.yaml
+    command: ["envoy", "-c", "/envoy-config.yaml", "-l", "info", "--service-cluster","adstest-cluster","--service-node","adstest-node"]
+    depends_on:
+      - xds-server
+    networks:
+      - xds-example
+    ports:
+      - "9901:9901"
+      - "10000:10000"
+
+  service1:
+    container_name: nginx_service1
+    image: nginx:alpine
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./service1/:/var/www/
+    networks:
+      - xds-example
+    expose:
+      - "80"
+    ports:
+      - "8010:80"
+
+  service2:
+    container_name: nginx_service2
+    image: nginx:alpine
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+      - ./service2/:/var/www/
+    networks:
+      - xds-example
+    expose:
+      - "80"
+    ports:
+      - "8020:80"
+networks:
+  xds-example: {}
