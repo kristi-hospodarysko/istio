@@ -1,0 +1,101 @@
+##################################################################################################
+# Chuck UI
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chuck-ui
+  labels:
+    app: chuck-ui
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chuck-ui
+        version: "1.0"
+        serving: "true"
+    spec:
+      containers:
+        - name: chuck-ui
+          image: sbishyr/chuck-ui:1.0
+          imagePullPolicy: Always
+          env:
+            - name: QUOTE_SERVICE_URL
+              value: http://chuck-joke-service:8080
+          ports:
+            - containerPort: 3000
+              name: http
+  selector:
+    matchLabels:
+      app: chuck-ui
+      version: "1.0"
+      serving: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chuck-ui
+  labels:
+    app: chuck-ui
+spec:
+  type: NodePort
+  ports:
+    - port: 3000
+      targetPort: 3000
+      protocol: TCP
+      name: http
+  selector:
+    app: chuck-ui
+    serving: "true"
+---
+##################################################################################################
+# Chuck Joke Service
+##################################################################################################
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chuck-joke-service
+  labels:
+    app: chuck-joke-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chuck-joke-service
+        version: "1.0"
+        serving: "true"
+    spec:
+      containers:
+        - name: chuck-joke-service
+          image: sbishyr/chuck-joke-service:1.0
+          imagePullPolicy: Always
+          env:
+            - name: JOKES_DB_URL
+              value: http://api.icndb.com
+          ports:
+            - containerPort: 8080
+              name: http
+  selector:
+    matchLabels:
+      app: chuck-joke-service
+      version: "1.0"
+      serving: "true"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: chuck-joke-service
+  labels:
+    app: chuck-joke-service
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: chuck-joke-service
+    serving: "true"

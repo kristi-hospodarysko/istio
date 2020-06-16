@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chuck-joke-service-v2
+  labels:
+    app: chuck-joke-service
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chuck-joke-service
+        version: "2.0"
+        serving: "true"
+    spec:
+      containers:
+        - name: chuck-joke-service
+          image: sbishyr/chuck-joke-service:2.0
+          imagePullPolicy: Always
+          env:
+            - name: JOKES_DB_URL
+              value: http://api.icndb.com
+          ports:
+            - containerPort: 8080
+              name: http
+  selector:
+    matchLabels:
+      app: chuck-joke-service
+      version: "2.0"
+      serving: "true"

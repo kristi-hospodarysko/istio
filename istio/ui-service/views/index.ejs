@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chuck Norris</title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <h1>Chuck Norris joke of the day:</h1>
+    <p><%- msg.joke %></p>
+    <% if(typeof msg.rating !== 'undefined'){ %>
+      <p>Rating: <%- msg.rating %></p>
+    <% } %>
+    <img src='/images/chuck.jpeg' alt="Your're browser is afraid to show Chuck Norris's picture">
+  </body>
+</html>

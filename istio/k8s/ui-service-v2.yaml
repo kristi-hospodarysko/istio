@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: chuck-ui-v2
+  labels:
+    app: chuck-ui
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: chuck-ui
+        version: "2.0"
+        serving: "true"
+    spec:
+      containers:
+        - name: chuck-ui
+          image: sbishyr/chuck-ui:2.0
+          imagePullPolicy: Always
+          env:
+            - name: QUOTE_SERVICE_URL
+              value: http://chuck-joke-service:8080
+          ports:
+            - containerPort: 3000
+              name: http
+  selector:
+    matchLabels:
+      app: chuck-ui
+      version: "2.0"
+      serving: "true"
