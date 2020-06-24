@@ -47,6 +47,7 @@ spec:
                         }
                       ]
                     }
+                  ]
                 }
               vm_config:
                 runtime: envoy.wasm.runtime.null
