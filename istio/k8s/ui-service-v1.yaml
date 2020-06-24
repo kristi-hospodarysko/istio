@@ -1,6 +1,3 @@
-##################################################################################################
-# Chuck UI
-##################################################################################################
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -11,6 +8,8 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        sidecar.istio.io/extraStatTags: test_path,test_path_attr
       labels:
         app: chuck-ui
         version: "1.0"
@@ -47,55 +46,4 @@ spec:
       name: http
   selector:
     app: chuck-ui
-    serving: "true"
----
-##################################################################################################
-# Chuck Joke Service
-##################################################################################################
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: chuck-joke-service
-  labels:
-    app: chuck-joke-service
-spec:
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: chuck-joke-service
-        version: "1.0"
-        serving: "true"
-    spec:
-      containers:
-        - name: chuck-joke-service
-          image: sbishyr/chuck-joke-service:1.0
-          imagePullPolicy: Always
-          env:
-            - name: JOKES_DB_URL
-              value: http://api.icndb.com
-          ports:
-            - containerPort: 8080
-              name: http
-  selector:
-    matchLabels:
-      app: chuck-joke-service
-      version: "1.0"
-      serving: "true"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: chuck-joke-service
-  labels:
-    app: chuck-joke-service
-spec:
-  type: NodePort
-  ports:
-    - port: 8080
-      targetPort: 8080
-      protocol: TCP
-      name: http
-  selector:
-    app: chuck-joke-service
     serving: "true"

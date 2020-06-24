@@ -1,0 +1,54 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: EnvoyFilter
+metadata:
+  name: istio-attributegen-filter
+spec:
+  workloadSelector:
+    labels:
+      app: chuck-ui
+  configPatches:
+  - applyTo: HTTP_FILTER
+    match:
+      context: SIDECAR_INBOUND
+      proxy:
+        proxyVersion: '1\.6.*'
+      listener:
+        filterChain:
+          filter:
+            name: "envoy.http_connection_manager"
+            subFilter:
+              name: "istio.stats"
+    patch:
+      operation: INSERT_BEFORE
+      value:
+        name: istio.attributegen
+        typed_config:
+          "@type": type.googleapis.com/udpa.type.v1.TypedStruct
+          type_url: type.googleapis.com/envoy.extensions.filters.http.wasm.v3.Wasm
+          value:
+            config:
+              configuration: |
+                {
+                  "attributes": [
+                    {
+                      "output_attribute": "request_path_attribute",
+                      "match": [
+                        {
+                          "value": "index",
+                          "condition": "request.url_path == '/' && request.method == 'GET'"
+                        },
+                        {
+                          "value": "css",
+                          "condition": "request.url_path.matches('/*css') && request.method == 'GET'"
+                        },
+                        {
+                          "value": "jpeg",
+                          "condition": "request.url_path.matches('/*jpeg') && request.method == 'GET'"
+                        }
+                      ]
+                    }
+                }
+              vm_config:
+                runtime: envoy.wasm.runtime.null
+                code:
+                  local: { inline_string: "envoy.wasm.attributegen" }
